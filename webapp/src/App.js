@@ -25,11 +25,11 @@ class App extends Component {
           <tr>
             <td>
               {this.state.ackL ? 'START' : 'Push to begin...'}
-              <Stopwatch state={this.state} pushtarget={() => this.setState({ ackL: true }) }/>
+              <Stopwatch state={this.state} pushtarget={() => this.setState({ ackL: true }) } resetTarget={() => this.setState({ ackL: false }) }/>
             </td>
             <td>
               {this.state.ackR ? 'START' : 'Push to begin...'}
-              <Stopwatch state={this.state} pushtarget={() => this.setState({ ackR: true }) }/>
+              <Stopwatch state={this.state} pushtarget={() => this.setState({ ackR: true }) } resetTarget={() => this.setState({ ackR: false }) }/>
             </td>
           </tr>
           </tbody>
