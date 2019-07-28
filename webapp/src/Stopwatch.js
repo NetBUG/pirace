@@ -8,6 +8,7 @@ class Stopwatch extends Component {
   handleClick = () => {
     if (!this.props.state.ackR || !this.props.state.ackL) {
         this.props.pushtarget();
+        return;
     }
     this.setState(state => {
       if (state.status) {

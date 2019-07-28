@@ -52,6 +52,10 @@ class Countdown extends Component {
   };
   handleReset = () => {
     clearInterval(this.timer); // new
+    this.props.stopRace();
+    this.props.stopCD();
+    this.props.state.ackR = false;
+    this.props.state.ackL = false;
     this.setState({ runningTime: 0, started: false, race: false, renderState: {
       b1: 'cd_hidden',
       b2: 'cd_hidden',
@@ -62,7 +66,7 @@ class Countdown extends Component {
     clearInterval(this.timer);
   }
   render() {
-    const { race, started, renderState } = this.state;
+    const { race, renderState } = this.state;
     const { b1, b2, b3 } = renderState;
     return (
       <div>
@@ -72,7 +76,7 @@ class Countdown extends Component {
            <span className={b1}>1...</span> 
            <span className="cd_start">{race ? 'START' : ''}</span>
         </p>
-        <button onClick={this.handleClick}>{started ? 'Stop' : 'Start'}</button>
+        {/*<button onClick={this.handleClick}>{started ? 'Stop' : 'Start'}</button>*/}
         <button onClick={this.handleReset}>Reset</button>
       </div>
     );
