@@ -4,6 +4,9 @@ import Countdown from './Countdown';
 import Stopwatch from './Stopwatch';
 import './App.css';
 
+const URL = 'ws://localhost:3030';
+
+
 class App extends Component {
   state = {
     ackL: false,
@@ -11,6 +14,29 @@ class App extends Component {
     countdown: false,
     race: false,
   };
+  ws = new WebSocket(URL);
+  componentDidMount() {
+    this.ws.onopen = () => {
+      // on connecting, do nothing but log it to the console
+      console.log('connected')
+    }
+
+    this.ws.onmessage = evt => {
+      // on receiving a message, add it to the list of messages
+      const message = JSON.parse(evt.data)
+      console.log(message);
+      this.setState({ackR: true});
+    }
+
+    this.ws.onclose = () => {
+      console.log('disconnected')
+      // automatically try to reconnect on connection loss
+      this.setState({
+        ws: new WebSocket(URL),
+      })
+    }
+  }
+    
   render() {
     return (
       <div className="App">

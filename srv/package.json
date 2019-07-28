@@ -1,0 +1,35 @@
+{
+  "name": "pirace-server",
+  "version": "1.0.0",
+  "description": "Race stopwatch app for Raspberry Pi",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest --forExit",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NetBUG/pirace.git"
+  },
+  "keywords": [
+    "stopwatch",
+    "raspberry",
+    "rpi",
+    "timer",
+    "react",
+    "gpio"
+  ],
+  "author": "NetBUG",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NetBUG/pirace/issues"
+  },
+  "homepage": "https://github.com/NetBUG/pirace#readme",
+  "dependencies": {
+    "bunyan": "^1.8.12",
+    "ws": "^7.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  }
+}
