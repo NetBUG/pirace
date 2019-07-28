@@ -1,3 +1,6 @@
+# Race timer app
+This project is designed as a tool to provide small races with two participants with a timer that can measure who was the first
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
