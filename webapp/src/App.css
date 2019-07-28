@@ -31,3 +31,32 @@
     transform: rotate(360deg);
   }
 }
+
+.cd {
+  font-size: 18;
+  background-color: lightgray;
+}
+
+.cd_hidden {
+  display: none;
+}
+
+.cd_three {
+  color: green;
+}
+
+.cd_two {
+  color: yellow;
+}
+
+.cd_one {
+  color: orange;
+}
+
+.cd_start {
+  color: orangered;
+}
+
+.cd_inact {
+  color: gray;
+}
