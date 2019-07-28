@@ -8,13 +8,20 @@ class Stopwatch extends Component {
   handleClick = () => {
     if (!this.props.state.ackR || !this.props.state.ackL) {
         this.props.pushtarget();
+        this.setState({ runningTime: 0 });
+        setTimeout(() => {
+            if ((this.props.pos === 'left' && !this.props.state.ackR) ||
+              (this.props.pos === 'right' && !this.props.state.ackL)) {
+              this.props.resetTarget();
+            }
+        }, 5000);
         return;
     }
     this.setState(state => {
       if (state.status) {
         clearInterval(this.timer);
       } else {
-        if (this.props.state.race) {
+        if (this.props.state.race && typeof this.state.runningTime === 'number') {
             const startTime = Date.now() - this.state.runningTime;
             this.timer = setInterval(() => {
             this.setState({ runningTime: Date.now() - startTime });
@@ -34,11 +41,11 @@ class Stopwatch extends Component {
     clearInterval(this.timer);
   }
   render() {
-    const { status, runningTime } = this.state;
+    const { runningTime } = this.state;
     return (
       <div>
-        <p>{runningTime}ms</p>
-        <button onClick={this.handleClick}>{status ? 'Stop' : 'Start'}</button>
+        <p>{runningTime}{typeof runningTime === 'number' ? 'ms' : ''}</p>
+        <button onClick={this.handleClick}>Start</button>
         <button onClick={this.handleReset}>Reset</button>
       </div>
     );
