@@ -71,9 +71,10 @@ class Countdown extends Component {
     return (
       <div>
         <p className="cd">
-           <span className={b3}>3...</span>
-           <span className={b2}>2...</span>
-           <span className={b1}>1...</span> 
+          &nbsp;
+           <span className={b3}>3... </span>
+           <span className={b2}>2... </span>
+           <span className={b1}>1... </span> 
            <span className="cd_start">{race ? 'START' : ''}</span>
         </p>
         {/*<button onClick={this.handleClick}>{started ? 'Stop' : 'Start'}</button>*/}

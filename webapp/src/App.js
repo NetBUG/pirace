@@ -18,14 +18,18 @@ class App extends Component {
   componentDidMount() {
     this.ws.onopen = () => {
       // on connecting, do nothing but log it to the console
-      console.log('connected')
+      console.log('connected');
+      this.ws.send(JSON.stringify({ state: 'ok' }))
     }
 
     this.ws.onmessage = evt => {
       // on receiving a message, add it to the list of messages
-      const message = JSON.parse(evt.data)
+      const message = JSON.parse(evt.data);
       console.log(message);
-      this.setState({ackR: true});
+      if (message && message.event && message.event === 'button') {
+        if (message.id === '1') this.setState({ackL: true});
+        if (message.id === '2') this.setState({ackR: true});
+      }
     }
 
     this.ws.onclose = () => {
@@ -40,26 +44,20 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <h1>Countdown</h1>
+        <div className="countdown">
         <Countdown state={this.state}
           startRace={() => this.setState({ race: true }) } stopRace={() => this.setState({ race: false }) }
           startCD={() => this.setState({ countdown: true }) } stopCD={() => this.setState({ countdown: false }) }/>
         {/*this.state.race ? 'Go!' : 'Push both buttons to begin...'*/}
-        <h1>Stopwatch</h1>
-        <table>
-          <tbody>
-          <tr>
-            <td>
-              {this.state.ackL ? 'START' : 'Push to begin...'}
-              <Stopwatch state={this.state} pushtarget={() => this.setState({ ackL: true }) } resetTarget={() => this.setState({ ackL: false }) } pos='left'/>
-            </td>
-            <td>
-              {this.state.ackR ? 'START' : 'Push to begin...'}
-              <Stopwatch state={this.state} pushtarget={() => this.setState({ ackR: true }) } resetTarget={() => this.setState({ ackR: false }) } pos='right'/>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+        </div>
+        <div className="sw_left">
+          <Stopwatch state={this.state} pushtarget={() => this.setState({ ackL: true }) } resetTarget={() => this.setState({ ackL: false }) } pos='left'/>
+          {this.state.ackL ? 'START' : 'Push to begin...'}
+        </div>
+        <div className="sw_right">
+          <Stopwatch state={this.state} pushtarget={() => this.setState({ ackR: true }) } resetTarget={() => this.setState({ ackR: false }) } pos='right'/>
+          {this.state.ackR ? 'START' : 'Push to begin...'}
+        </div>
       </div>
   );
   }

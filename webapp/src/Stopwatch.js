@@ -44,7 +44,7 @@ class Stopwatch extends Component {
     const { runningTime } = this.state;
     return (
       <div>
-        <p>{runningTime}{typeof runningTime === 'number' ? 'ms' : ''}</p>
+        <p className="watch">{runningTime}{typeof runningTime === 'number' ? 'ms' : ''}</p>
         <button onClick={this.handleClick}>Start</button>
         <button onClick={this.handleReset}>Reset</button>
       </div>
