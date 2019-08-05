@@ -27,10 +27,11 @@ class Countdown extends Component {
       state.renderState.b1 = 'cd_inact';
       this.props.startRace();
       this.props.stopCD();
-    } else {
+    }
+    if (state.runningTime < 8000) this.setState(state);
+    else {
       this.handleReset();
     }
-    this.setState(state);
   }
   componentDidUpdate() {
     if (this.props.state.ackL && this.props.state.ackR && !this.state.started) {
@@ -38,7 +39,6 @@ class Countdown extends Component {
     }
   }
   handleClick = () => {
-    console.log('ura')
     this.setState(state => {
       if (state.started) {
         clearInterval(this.timer);
