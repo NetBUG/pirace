@@ -3,8 +3,19 @@ import React, { Component } from 'react';
 class Stopwatch extends Component {
   state = {
     status: false,
-    runningTime: 0
+    runningTime: 0,
+    id: '0',
   };
+  componentDidMount() {
+    if (this.props.pos === 'left') this.setState({ id: '1' });
+    if (this.props.pos === 'right') this.setState({ id: '2' });
+    this.props.wsProc(message => {
+      if (message && message.event && message.event === 'button') {
+        if (message.id === this.state.id) this.handleClick();
+      }
+    });  
+  }
+
   handleClick = () => {
     if (!this.props.state.ackR || !this.props.state.ackL) {
         this.props.pushtarget();
@@ -22,12 +33,14 @@ class Stopwatch extends Component {
         clearInterval(this.timer);
       } else {
         if (this.props.state.race && typeof this.state.runningTime === 'number') {
+            this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
             const startTime = Date.now() - this.state.runningTime;
             this.timer = setInterval(() => {
             this.setState({ runningTime: Date.now() - startTime });
             });
         } else if (this.props.state.countdown) {
-            state.runningTime = 'False start!';
+          this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
+          state.runningTime = 'False start!';
         }
       }
       return { status: !state.status };
