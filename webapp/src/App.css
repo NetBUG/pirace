@@ -49,6 +49,8 @@ p {
 .watch {
   font-size: 300%;
   color: white;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
 }
 
 .cd_hidden {

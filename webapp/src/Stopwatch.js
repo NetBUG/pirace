@@ -57,11 +57,15 @@ class Stopwatch extends Component {
   componentWillUnmount() {
     clearInterval(this.timer);
   }
+  showSeconds(time) {
+    return Math.floor(time / 1000) + "." + Math.round(time % 1000 / 10);
+  }
   render() {
     const { runningTime } = this.state;
     return (
       <div>
-        <p className="watch">{runningTime}{typeof runningTime === 'number' ? 'ms' : ''}</p>
+        <p className="watch">{typeof runningTime === 'number' ? this.showSeconds(runningTime) : runningTime}
+        {typeof runningTime === 'number' ? ' s' : ''}</p>
         <button onClick={this.handleClick}>Start</button>
         { /* <button onClick={this.handleReset}>Reset</button>*/ }
       </div>
