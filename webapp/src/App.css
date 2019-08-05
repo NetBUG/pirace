@@ -3,6 +3,7 @@ body {
   background-color: #333333;
   font-size: calc(1em + 1vw);
   height: 100%;
+  color: #ffeeaa;
 }
 
 .App-logo {
@@ -21,13 +22,20 @@ body {
   color: white;
 }
 
+p {
+  margin-top: 8%;
+  padding-bottom: 10%;
+}
+
 .sw_left {
   width: 50%;
   float: left;
+  text-align: center;
 }
 .sw_right {
   width: 50%;
   float: right;
+  text-align: center;
 }
 .countdown {
   height: 30vmin;

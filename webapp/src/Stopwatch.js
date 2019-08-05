@@ -36,7 +36,11 @@ class Stopwatch extends Component {
             this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
             const startTime = Date.now() - this.state.runningTime;
             this.timer = setInterval(() => {
-            this.setState({ runningTime: Date.now() - startTime });
+              if (!this.props.state.race) {
+                clearInterval(this.timer);
+                this.setState({ status: false });
+              }
+              this.setState({ runningTime: Date.now() - startTime });
             });
         } else if (this.props.state.countdown) {
           this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
@@ -59,7 +63,7 @@ class Stopwatch extends Component {
       <div>
         <p className="watch">{runningTime}{typeof runningTime === 'number' ? 'ms' : ''}</p>
         <button onClick={this.handleClick}>Start</button>
-        <button onClick={this.handleReset}>Reset</button>
+        { /* <button onClick={this.handleReset}>Reset</button>*/ }
       </div>
     );
   }

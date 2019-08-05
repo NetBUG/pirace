@@ -22,11 +22,13 @@ class Countdown extends Component {
     } else if (state.runningTime < 3000) {
       state.renderState.b2 = 'cd_inact';
       state.renderState.b1 = 'cd_one';
-    } else {
+    } else if (state.runningTime < 8000) {
       state.race = true;
       state.renderState.b1 = 'cd_inact';
       this.props.startRace();
       this.props.stopCD();
+    } else {
+      this.handleReset();
     }
     this.setState(state);
   }
@@ -51,6 +53,7 @@ class Countdown extends Component {
     });
   };
   handleReset = () => {
+    console.log('Storred!')
     clearInterval(this.timer); // new
     this.props.stopRace();
     this.props.stopCD();
@@ -68,6 +71,7 @@ class Countdown extends Component {
   render() {
     const { race, renderState } = this.state;
     const { b1, b2, b3 } = renderState;
+    const { ackR, ackL } = this.props.state;
     return (
       <div>
         <p className="cd">
@@ -76,8 +80,10 @@ class Countdown extends Component {
            <span className={b2}>2... </span>
            <span className={b1}>1... </span> 
            <span className="cd_start">{race ? 'START' : ''}</span>
+           <span className="cd_start">{race || ackR || ackL ? '' : 'TIMEOUT'}</span>
         </p>
-        {/*<button onClick={this.handleClick}>{started ? 'Stop' : 'Start'}</button>*/}
+        <span>{race || ackR || ackL ? '' : 'Игра начнётся, когда оба участника нажмут кнопку'}</span>
+        {/*<button onClick={this.handleClick}>{started ? 'Stop' : 'Start'}</button> */}
         <button onClick={this.handleReset}>Reset</button>
       </div>
     );

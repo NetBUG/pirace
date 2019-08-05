@@ -52,11 +52,11 @@ class App extends Component {
         </div>
         <div className="sw_left">
           <Stopwatch ws={this.ws} wsProc={this.registerHandler} state={this.state} pushtarget={() => this.setState({ ackL: true }) } resetTarget={() => this.setState({ ackL: false }) } pos='left'/>
-          {this.state.ackL ? 'START' : 'Push to begin...'}
+          {this.state.ackL ? '' : 'Push to begin...'}
         </div>
         <div className="sw_right">
           <Stopwatch ws={this.ws} wsProc={this.registerHandler} state={this.state} pushtarget={() => this.setState({ ackR: true }) } resetTarget={() => this.setState({ ackR: false }) } pos='right'/>
-          {this.state.ackR ? 'START' : 'Push to begin...'}
+          {this.state.ackR ? '' : 'Push to begin...'}
         </div>
       </div>
   );
