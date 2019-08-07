@@ -42,9 +42,11 @@ class Stopwatch extends Component {
               }
               this.setState({ runningTime: Date.now() - startTime });
             });
-        } else if (this.props.state.countdown) {
+        } else {
           this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
-          state.runningTime = 'False start!';
+          if (this.props.state.countdown) {
+            state.runningTime = 'False start!';
+          }
         }
       }
       return { status: !state.status };
