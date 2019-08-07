@@ -106,8 +106,14 @@ wss.on('connection', ws => {
       if (msg.id === 2) m2en = true;
     }
     if (msg.event === 'disable') {
-      if (msg.id === 1) m1en = false;
-      if (msg.id === 2) m2en = false;
+      if (msg.id === 1) {
+        machine1.pwmWrite(0);
+        m1en = false;
+      }
+      if (msg.id === 2)  {
+        machine2.pwmWrite(0);
+        m2en = false;
+      }
     }
     notifyClients(wss.clients, msg);
   });
