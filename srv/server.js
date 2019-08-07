@@ -3,7 +3,9 @@ const Gpio = require('pigpio').Gpio;
 
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
-process.stdin.setRawMode(true);
+if (process.stdin.setRawMode) {
+  process.stdin.setRawMode(true);
+}
 
 console.log('Waiting for clients...');
 const wss = new WebSocket.Server({ port: 3030 });
