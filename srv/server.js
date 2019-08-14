@@ -16,9 +16,6 @@ const m2coeff = 255;
 const machine1 = new Gpio(20, {mode: Gpio.OUTPUT});
 const machine2 =  new Gpio(21, {mode: Gpio.OUTPUT});
 
-const m1en = true; //false;
-const m2en = true; //false;
-
 const button1 = new Gpio(22, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
@@ -40,6 +37,8 @@ const endstop2 = new Gpio(26, {
   edge: Gpio.RISING_EDGE,
 }); // */
 
+const m1en = true;
+const m2en = true;
 
 wss.on('connection', ws => {
   console.log('Set up connection!');
@@ -55,26 +54,27 @@ wss.on('connection', ws => {
   const btn1 = (lvl) => {
     console.log('Button 1 pressed');
     notifyClients(wss.clients, { event: 'button', id: '1' });
-    if (m1en) machine1.pwmWrite(m1coeff);
   };
 
   const btn2 = (lvl) => {
     console.log('Button 2 pressed');
     notifyClients(wss.clients, { event: 'button', id: '2' });
-    if (m2en) machine2.pwmWrite(m2coeff);
   };
 
   const es1 = (lvl) => {
     console.log('Endstop 1 triggered');
     notifyClients(wss.clients, { event: 'button', id: '1' });
-    if (m1en) machine1.pwmWrite(0);
+    machine1.pwmWrite(0);
+    m1en = false;
+    setTimeout(() => { m1en = true }, 5000);
   };
 
   const es2 = (lvl) => {
     console.log('Endstop 2 triggered!');
-    console.log(lvl);
     notifyClients(wss.clients, { event: 'button', id: '2' });
-    if (m2en) machine2.pwmWrite(0);
+    machine2.pwmWrite(0);
+    m2en = false;
+    setTimeout(() => { m2en = true }, 5000);
   };
 
   button1.on('interrupt', btn1);
@@ -102,17 +102,19 @@ wss.on('connection', ws => {
     const msg = JSON.parse(data);
     console.log(msg);
     if (msg.event === 'enable') {
-      if (msg.id === 1) m1en = true;
-      if (msg.id === 2) m2en = true;
+      if (msg.id === 1 && m1en) {
+		machine1.pwmWrite(m1coeff);
+  	  }
+      if (msg.id === 2 && m2en) {
+		machine2.pwmWrite(m2coeff);
+	  }
     }
     if (msg.event === 'disable') {
       if (msg.id === 1) {
         machine1.pwmWrite(0);
-        m1en = false;
       }
       if (msg.id === 2)  {
         machine2.pwmWrite(0);
-        m2en = false;
       }
     }
     notifyClients(wss.clients, msg);
