@@ -1,0 +1,5 @@
+vk:
+  appid: 123456
+  redirect_uri: http://api.vk.com/blank.html
+temp:
+  access_token: null
