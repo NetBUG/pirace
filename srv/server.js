@@ -15,6 +15,8 @@ const m2coeff = 255;
 
 const machine1 = new Gpio(20, {mode: Gpio.OUTPUT});
 const machine2 =  new Gpio(21, {mode: Gpio.OUTPUT});
+machine1.pwmWrite(0);
+machine2.pwmWrite(0);
 
 const button1 = new Gpio(22, {
   mode: Gpio.INPUT,
@@ -29,16 +31,16 @@ const button2 = new Gpio(27, {
 const endstop1 = new Gpio(19, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
-  edge: Gpio.RISING_EDGE,
+  edge: Gpio.FALLING_EDGE,
 });
 const endstop2 = new Gpio(26, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
-  edge: Gpio.RISING_EDGE,
+  edge: Gpio.FALLING_EDGE,
 }); // */
 
-const m1en = true;
-const m2en = true;
+let m1en = true;
+let m2en = true;
 
 wss.on('connection', ws => {
   console.log('Set up connection!');
@@ -64,7 +66,7 @@ wss.on('connection', ws => {
   const es1 = (lvl) => {
     console.log('Endstop 1 triggered');
     notifyClients(wss.clients, { event: 'button', id: '1' });
-    machine1.pwmWrite(0);
+    machine1.digitalWrite(0);
     m1en = false;
     setTimeout(() => { m1en = true }, 5000);
   };
@@ -72,7 +74,7 @@ wss.on('connection', ws => {
   const es2 = (lvl) => {
     console.log('Endstop 2 triggered!');
     notifyClients(wss.clients, { event: 'button', id: '2' });
-    machine2.pwmWrite(0);
+    machine2.digitalWrite(0);
     m2en = false;
     setTimeout(() => { m2en = true }, 5000);
   };
@@ -100,21 +102,24 @@ wss.on('connection', ws => {
 
   ws.on('message', data => {  // Sends data from single client to all others
     const msg = JSON.parse(data);
-    console.log(msg);
     if (msg.event === 'enable') {
-      if (msg.id === 1 && m1en) {
-		machine1.pwmWrite(m1coeff);
+      if (msg.id === '1' && m1en) {
+		console.log('Running machine 1!');
+		machine1.digitalWrite(1);
+		//machine1.pwmWrite(m1coeff);
   	  }
-      if (msg.id === 2 && m2en) {
+      if (msg.id === '2' && m2en) {
+		console.log('Running machine 2!');
+		//machine2.pwmWrite(m1coeff);
 		machine2.pwmWrite(m2coeff);
 	  }
     }
     if (msg.event === 'disable') {
-      if (msg.id === 1) {
-        machine1.pwmWrite(0);
+      if (msg.id === '1') {
+        machine1.digitalWrite(0);
       }
-      if (msg.id === 2)  {
-        machine2.pwmWrite(0);
+      if (msg.id === '2')  {
+        machine2.digitalWrite(0);
       }
     }
     notifyClients(wss.clients, msg);
