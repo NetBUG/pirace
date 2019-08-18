@@ -14,9 +14,9 @@ class Countdown extends Component {
   handleRender = (state) => {
     state.runningTime = Date.now() - this.startTime;
     if (state.runningTime < 1000) {
-      this.props.startCD();
       state.renderState.b3 = 'cd_three';
     } else if (state.runningTime < 2000) {
+      this.props.startCD();
       state.renderState.b3 = 'cd_inact';
       state.renderState.b2 = 'cd_two';
     } else if (state.runningTime < 3000) {
