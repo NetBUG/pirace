@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
 const Gpio = require('pigpio').Gpio;
+const fs = require('fs');
 
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
@@ -7,6 +8,7 @@ if (process.stdin.setRawMode) {
   process.stdin.setRawMode(true);
 }
 
+writeFile('=== RESTART SERVER === ');
 console.log('Waiting for clients...');
 const wss = new WebSocket.Server({ port: 3030 });
 
@@ -21,12 +23,12 @@ machine2.pwmWrite(0);
 const button1 = new Gpio(22, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
-  edge: Gpio.FALLING_EDGE, // FALLING_EGDE, EITHER_EDGE
+  edge: Gpio.RISING_EDGE, // FALLING_EGDE, EITHER_EDGE
 });
 const button2 = new Gpio(27, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
-  edge: Gpio.RISING_EDGE,
+  edge: Gpio.FALLING_EDGE,
 }); // */
 const endstop1 = new Gpio(19, {
   mode: Gpio.INPUT,
@@ -42,8 +44,35 @@ const endstop2 = new Gpio(26, {
 let m1en = true;
 let m2en = true;
 
+function dateFormat (date, fstr, utc = false) {
+  utc = utc ? 'getUTC' : 'get';
+  return fstr.replace (/%[YmdHMS]/g, function (m) {
+    switch (m) {
+    case '%Y': return date[utc + 'FullYear'] (); // no leading zeros required
+    case '%m': m = 1 + date[utc + 'Month'] (); break;
+    case '%d': m = date[utc + 'Date'] (); break;
+    case '%H': m = date[utc + 'Hours'] (); break;
+    case '%M': m = date[utc + 'Minutes'] (); break;
+    case '%S': m = date[utc + 'Seconds'] (); break;
+    default: return m.slice (1); // unknown code, remove %
+    }
+    // add leading zero if required
+    return ('0' + m).slice (-2);
+  });
+}
+
+function writeFile(str) {
+  const ts = dateFormat (new Date (), "%d/%m %H:%M:%S")
+  fs.appendFileSync('raceHistory.txt', `${ts} \t${str}\n`);
+}
+
+function writeLog(msg) {
+  writeFile(`Race ended	P1: ${msg.p1}	P2: ${msg.p2}`);
+}
+
 wss.on('connection', ws => {
   console.log('Set up connection!');
+  writeFile('=== CONNECTED CLIENT === ');
   console.log('Press 1 or 2 to emulate buttons, or q to quit');
   const notifyClients = (cli, obj) => {
     cli.forEach(client => {
@@ -104,12 +133,12 @@ wss.on('connection', ws => {
     const msg = JSON.parse(data);
     if (msg.event === 'enable') {
       if (msg.id === '1' && m1en) {
-		console.log('Running machine 1!');
+		console.log('Running machine 1!', m1en ? 'OK' : 'TIMED OUT');
 		machine1.digitalWrite(1);
 		//machine1.pwmWrite(m1coeff);
   	  }
       if (msg.id === '2' && m2en) {
-		console.log('Running machine 2!');
+		console.log('Running machine 2!', m2en ? 'OK' : 'TIMED OUT');
 		//machine2.pwmWrite(m1coeff);
 		machine2.pwmWrite(m2coeff);
 	  }
@@ -121,6 +150,9 @@ wss.on('connection', ws => {
       if (msg.id === '2')  {
         machine2.digitalWrite(0);
       }
+    }
+    if (msg.event === 'log') {
+      writeLog(msg);
     }
     notifyClients(wss.clients, msg);
   });

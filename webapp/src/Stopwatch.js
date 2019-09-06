@@ -44,7 +44,7 @@ class Stopwatch extends Component {
             this.timer = setInterval(() => {
               if (!this.props.state.race) {
                 clearInterval(this.timer);
-	        			this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
+                this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
                 this.setState({ status: false });
               }
               this.setState({ runningTime: Date.now() - startTime });

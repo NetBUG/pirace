@@ -59,6 +59,7 @@ class Countdown extends Component {
     this.props.state.timeLog.push(statusObj)
   }
   handleReset = () => {
+    // console.log('Storred!')
     clearInterval(this.timer); // new
     this.props.stopRace();
     this.props.stopCD();
