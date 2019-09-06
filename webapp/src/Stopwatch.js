@@ -34,9 +34,10 @@ class Stopwatch extends Component {
         return;
     };
     this.setState(state => {
-      if (state.status) {
-        clearInterval(this.timer);
-      } else {
+      if (!state.status) {
+      //   clearInterval(this.timer);
+      //  return { status: true };
+      // } else {
         if (this.props.state.race && typeof this.state.runningTime === 'number') {
             this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
             const startTime = Date.now() - this.state.runningTime;
@@ -56,8 +57,8 @@ class Stopwatch extends Component {
             this.storeState(state.runningTime);
           }
         }
+        return { status: true };
       }
-      return { status: !state.status };
     });
   };
   handleReset = () => {

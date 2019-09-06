@@ -54,7 +54,7 @@ class Countdown extends Component {
   };
   submitStatus = () => {
     const statusObj = { left: this.props.state.timeL, right: this.props.state.timeR, date: new Date() };
-    console.log(statusObj);
+    // console.log(statusObj);
     this.props.ws.send(JSON.stringify(statusObj));
     this.props.state.timeLog.push(statusObj)
   }
