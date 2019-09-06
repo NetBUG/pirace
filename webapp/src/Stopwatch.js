@@ -14,7 +14,12 @@ class Stopwatch extends Component {
         if (message.id === this.state.id) this.handleClick();
       }
     });  
-  }
+  };
+  storeState(str) {
+    if (this.props.pos === 'left') this.props.state.timeL = str;
+    if (this.props.pos === 'right') this.props.state.timeR = str;
+    // console.log('Id: ', this.props.pos, ', state: ', str);
+  };
 
   handleClick = () => {
     if (!this.props.state.ackR || !this.props.state.ackL) {
@@ -27,7 +32,7 @@ class Stopwatch extends Component {
             }
         }, 5000);
         return;
-    }
+    };
     this.setState(state => {
       if (state.status) {
         clearInterval(this.timer);
@@ -38,15 +43,17 @@ class Stopwatch extends Component {
             this.timer = setInterval(() => {
               if (!this.props.state.race) {
                 clearInterval(this.timer);
-				this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
+	        			this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
                 this.setState({ status: false });
               }
               this.setState({ runningTime: Date.now() - startTime });
+              this.storeState(this.state.runningTime);
             });
         } else {
           this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
           if (this.props.state.countdown) {
             state.runningTime = 'False start!';
+            this.storeState(state.runningTime);
           }
         }
       }

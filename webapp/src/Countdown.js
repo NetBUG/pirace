@@ -52,8 +52,13 @@ class Countdown extends Component {
       }
     });
   };
+  submitStatus = () => {
+    const statusObj = { left: this.props.state.timeL, right: this.props.state.timeR, date: new Date() };
+    console.log(statusObj);
+    this.props.ws.send(JSON.stringify(statusObj));
+    this.props.state.timeLog.push(statusObj)
+  }
   handleReset = () => {
-    console.log('Storred!')
     clearInterval(this.timer); // new
     this.props.stopRace();
     this.props.stopCD();
@@ -64,6 +69,7 @@ class Countdown extends Component {
       b2: 'cd_hidden',
       b3: 'cd_hidden',
     } } );
+    this.submitStatus();
   };
   componentWillUnmount() {
     clearInterval(this.timer);

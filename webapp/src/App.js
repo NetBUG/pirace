@@ -14,6 +14,9 @@ class App extends Component {
     countdown: false,
     race: false,
     handlers: [],
+    timeR: '',
+    timeL: '',
+    timeLog: [],
   };
   ws = new WebSocket(URL);
   
@@ -45,7 +48,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="countdown">
-        <Countdown state={this.state}
+        <Countdown state={this.state}  ws={this.ws}
           startRace={() => this.setState({ race: true }) } stopRace={() => this.setState({ race: false }) }
           startCD={() => this.setState({ countdown: true }) } stopCD={() => this.setState({ countdown: false }) }/>
         {/*this.state.race ? 'Go!' : 'Push both buttons to begin...'*/}
