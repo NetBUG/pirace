@@ -47,7 +47,7 @@ p {
   font-size: 500%;
 }
 .watch {
-  font-size: 300%;
+  font-size: 400%;
   color: white;
   font-family: 'Courier New', Courier, monospace;
   font-weight: bold;
@@ -75,4 +75,8 @@ p {
 
 .cd_inact {
   color: gray;
+}
+
+.b1 {
+  font-size: 200%;
 }

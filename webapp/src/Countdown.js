@@ -53,7 +53,10 @@ class Countdown extends Component {
     });
   };
   submitStatus = () => {
-    const statusObj = { left: this.props.state.timeL, right: this.props.state.timeR, date: new Date() };
+    const statusObj = { event: 'log',
+		left: this.props.state.timeL, 
+		right: this.props.state.timeR, 
+		date: new Date() };
     // console.log(statusObj);
     this.props.ws.send(JSON.stringify(statusObj));
     this.props.state.timeLog.push(statusObj)
@@ -89,7 +92,7 @@ class Countdown extends Component {
            <span className="cd_start">{race ? 'START' : ''}</span>
            <span className="cd_start">{race || ackR || ackL ? '' : 'TIMEOUT'}</span>
         </p>
-        <span>{race || ackR || ackL ? '' : 'Игра начнётся, когда оба участника нажмут кнопку'}</span>
+        <span className="b1">{race || ackR || ackL ? '' : 'Игра начнётся, когда оба участника нажмут кнопку'}</span>
         {/*<button onClick={this.handleClick}>{started ? 'Stop' : 'Start'}</button>
         <button onClick={this.handleReset}>Reset</button> */}
       </div>

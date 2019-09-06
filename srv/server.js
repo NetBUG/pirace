@@ -14,6 +14,8 @@ const wss = new WebSocket.Server({ port: 3030 });
 
 const m1coeff = 255;
 const m2coeff = 255;
+let m0 = false;
+let m1 = false;
 
 const machine1 = new Gpio(20, {mode: Gpio.OUTPUT});
 const machine2 =  new Gpio(21, {mode: Gpio.OUTPUT});
@@ -24,22 +26,30 @@ const button1 = new Gpio(22, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
   edge: Gpio.RISING_EDGE, // FALLING_EGDE, EITHER_EDGE
+  alert: true,
 });
 const button2 = new Gpio(27, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
   edge: Gpio.FALLING_EDGE,
+  alert: true,
 }); // */
 const endstop1 = new Gpio(19, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
   edge: Gpio.FALLING_EDGE,
+  alert: true,
 });
 const endstop2 = new Gpio(26, {
   mode: Gpio.INPUT,
   pullUpDown: Gpio.PUD_DOWN,
   edge: Gpio.FALLING_EDGE,
+  alert: true,
 }); // */
+button1.glitchFilter(60000);
+button2.glitchFilter(60000);
+endstop1.glitchFilter(20000);
+endstop2.glitchFilter(20000);
 
 let m1en = true;
 let m2en = true;
@@ -67,7 +77,7 @@ function writeFile(str) {
 }
 
 function writeLog(msg) {
-  writeFile(`Race ended	P1: ${msg.p1}	P2: ${msg.p2}`);
+  writeFile(`Race ended	P1(left): ${msg.left}	P2(right): ${msg.right}`);
 }
 
 wss.on('connection', ws => {
@@ -83,33 +93,43 @@ wss.on('connection', ws => {
   };
 
   const btn1 = (lvl) => {
+	if (m0) {
+	  console.log('BTN1 debounce');
+	  return;
+	}
     console.log('Button 1 pressed');
     notifyClients(wss.clients, { event: 'button', id: '1' });
   };
 
   const btn2 = (lvl) => {
+	if (m1) {
+	  console.log('BTN1 debounce');
+	  return;
+	}
     console.log('Button 2 pressed');
     notifyClients(wss.clients, { event: 'button', id: '2' });
   };
 
   const es1 = (lvl) => {
     console.log('Endstop 1 triggered');
-    notifyClients(wss.clients, { event: 'button', id: '1' });
+    notifyClients(wss.clients, { event: 'endstop', id: '1' });
     machine1.digitalWrite(0);
+    m0 = false;
     m1en = false;
     setTimeout(() => { m1en = true }, 5000);
   };
 
   const es2 = (lvl) => {
     console.log('Endstop 2 triggered!');
-    notifyClients(wss.clients, { event: 'button', id: '2' });
+    notifyClients(wss.clients, { event: 'endstop', id: '2' });
     machine2.digitalWrite(0);
+    m1 = false;
     m2en = false;
     setTimeout(() => { m2en = true }, 5000);
   };
 
-  button1.on('interrupt', btn1);
-  button2.on('interrupt', btn2); // */
+  button1.on('alert', btn1);
+  button2.on('alert', btn2); // */
   endstop1.on('interrupt', es1);
   endstop2.on('interrupt', es2);
 
@@ -135,26 +155,30 @@ wss.on('connection', ws => {
       if (msg.id === '1' && m1en) {
 		console.log('Running machine 1!', m1en ? 'OK' : 'TIMED OUT');
 		machine1.digitalWrite(1);
+		m0 = true;
 		//machine1.pwmWrite(m1coeff);
   	  }
       if (msg.id === '2' && m2en) {
 		console.log('Running machine 2!', m2en ? 'OK' : 'TIMED OUT');
 		//machine2.pwmWrite(m1coeff);
+		m1 = true;
 		machine2.pwmWrite(m2coeff);
 	  }
     }
     if (msg.event === 'disable') {
       if (msg.id === '1') {
         machine1.digitalWrite(0);
+        m0 = false;
       }
       if (msg.id === '2')  {
         machine2.digitalWrite(0);
+        m1 = false;
       }
     }
     if (msg.event === 'log') {
       writeLog(msg);
     }
-    notifyClients(wss.clients, msg);
+    // notifyClients(wss.clients, msg);
   });
   
   setInterval(() => {

@@ -10,8 +10,18 @@ class Stopwatch extends Component {
     if (this.props.pos === 'left') this.setState({ id: '1' });
     if (this.props.pos === 'right') this.setState({ id: '2' });
     this.props.wsProc(message => {
-      if (message && message.event && message.event === 'button') {
-        if (message.id === this.state.id) this.handleClick();
+      if (message && message.event) {
+        if (message.id === this.state.id) {
+		  // console.log(message);
+		  if (message.event === 'button') {
+		    this.handleClick();
+		  } else if (message.event === 'endstop') {
+			clearInterval(this.timer);
+            this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));			
+		  } /* else {
+			  alert(JSON.stringify(message));
+		  } */
+		}
       }
     });  
   };
@@ -34,11 +44,17 @@ class Stopwatch extends Component {
         return;
     };
     this.setState(state => {
-      if (!state.status) {
-      //   clearInterval(this.timer);
-      //  return { status: true };
-      // } else {
+      if (state.status) {
+		if (!this.props.state.race) {
+          clearInterval(this.timer);
+	    } else {
+		  console.log('Car ', this.state.id, ' within race!');
+		}
+	    return { status: false };
+      } else {
+		console.log('Trying to start car ', this.state.id);
         if (this.props.state.race && typeof this.state.runningTime === 'number') {
+			console.log('Starting car ', this.state.id);
             this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
             const startTime = Date.now() - this.state.runningTime;
             this.timer = setInterval(() => {
@@ -50,14 +66,15 @@ class Stopwatch extends Component {
               this.setState({ runningTime: Date.now() - startTime });
               this.storeState(this.state.runningTime);
             });
+		  return { status: true };
         } else {
           this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
           if (this.props.state.countdown) {
             state.runningTime = 'False start!';
             this.storeState(state.runningTime);
           }
+		  return { status: false };
         }
-        return { status: true };
       }
     });
   };
