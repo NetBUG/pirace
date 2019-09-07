@@ -16,17 +16,15 @@ class Stopwatch extends Component {
 		  if (message.event === 'button') {
 			if (this.props.state.race && typeof this.state.runningTime === 'number') {
 			  this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
-			} else {
-			  this.handleClick(); // NOTICE: uncomment if needed!
-		    }
+			}
+			// this.handleClick(); // NOTICE: uncomment if needed!
 		  } else if (message.event === 'endstop') {
 			clearInterval(this.timer);
             this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));			
 		  } /* else {
 			  alert(JSON.stringify(message));
 		  } */
-		} // else reject the message
-	  }
+		}
     });  
   };
   storeState(str) {
@@ -36,16 +34,13 @@ class Stopwatch extends Component {
   };
   startCountdown = () => {
     const startTime = Date.now() - this.state.runningTime;
-    this.setState({ status: true });
     this.timer = setInterval(() => {
       if (!this.props.state.race) {
-		if (!this.state.status) {
-		  return;
-	    }
         clearInterval(this.timer);
         this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
         this.setState({ status: false });
- 
+      } else {
+        this.setState({ status: true });
       }
       this.setState({ runningTime: Date.now() - startTime });
       this.storeState(this.state.runningTime);
@@ -72,7 +67,7 @@ class Stopwatch extends Component {
 		}
 	    return { status: false };
       } else {
-		// console.log('Trying to start car ', this.state.id);
+		console.log('Trying to start car ', this.state.id);
         if (this.props.state.race && typeof this.state.runningTime === 'number') {
 			console.log('Starting car ', this.state.id);
             this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
@@ -108,6 +103,7 @@ class Stopwatch extends Component {
     clearInterval(this.timer);
   }
   componentDidUpdate() {
+    console.log('Updated');
     if (this.props.state.race && !this.state.status) {
       console.log('Starting...');
       this.startCountdown();
@@ -120,7 +116,7 @@ class Stopwatch extends Component {
     const { runningTime } = this.state;
     return (
       <div>
-        <p className="watch">{typeof runningTime === 'number' && !Number.isNaN(runningTime) ? this.showSeconds(runningTime) : runningTime}
+        <p className="watch">{typeof runningTime === 'number' ? this.showSeconds(runningTime) : runningTime}
         {typeof runningTime === 'number' ? ' s' : ''}</p>
         <button onClick={this.handleClick}>Start</button>
         { /* <button onClick={this.handleReset}>Reset</button>*/ }
