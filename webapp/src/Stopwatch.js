@@ -17,7 +17,7 @@ class Stopwatch extends Component {
 			if (this.props.state.race && typeof this.state.runningTime === 'number') {
 			  this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
 			}
-			// this.handleClick(); // NOTICE: uncomment if needed!
+			this.handleClick(); // NOTICE: uncomment if needed!
 		  } else if (message.event === 'endstop') {
 			clearInterval(this.timer);
             this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));			
@@ -25,6 +25,7 @@ class Stopwatch extends Component {
 			  alert(JSON.stringify(message));
 		  } */
 		}
+	  }
     });  
   };
   storeState(str) {
@@ -32,20 +33,7 @@ class Stopwatch extends Component {
     if (this.props.pos === 'right') this.props.state.timeR = str;
     // console.log('Id: ', this.props.pos, ', state: ', str);
   };
-  startCountdown = () => {
-    const startTime = Date.now() - this.state.runningTime;
-    this.timer = setInterval(() => {
-      if (!this.props.state.race) {
-        clearInterval(this.timer);
-        this.props.ws.send(JSON.stringify({ event: 'disable', id: this.state.id }));
-        this.setState({ status: false });
-      } else {
-        this.setState({ status: true });
-      }
-      this.setState({ runningTime: Date.now() - startTime });
-      this.storeState(this.state.runningTime);
-    });
-  } // startCountdown
+
   handleClick = () => {
     if (!this.props.state.ackR || !this.props.state.ackL) {
         this.props.pushtarget();
@@ -69,7 +57,6 @@ class Stopwatch extends Component {
       } else {
 		console.log('Trying to start car ', this.state.id);
         if (this.props.state.race && typeof this.state.runningTime === 'number') {
-			console.log('Starting car ', this.state.id);
             this.props.ws.send(JSON.stringify({ event: 'enable', id: this.state.id }));
             const startTime = Date.now() - this.state.runningTime;
             this.timer = setInterval(() => {
@@ -101,13 +88,6 @@ class Stopwatch extends Component {
   };
   componentWillUnmount() {
     clearInterval(this.timer);
-  }
-  componentDidUpdate() {
-    console.log('Updated');
-    if (this.props.state.race && !this.state.status) {
-      console.log('Starting...');
-      this.startCountdown();
-    }
   }
   showSeconds(time) {
     return Math.floor(time / 1000) + "." + Math.round(time % 1000 / 10);
