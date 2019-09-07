@@ -130,8 +130,8 @@ wss.on('connection', ws => {
 
   button1.on('alert', btn1);
   button2.on('alert', btn2); // */
-  endstop1.on('interrupt', es1);
-  endstop2.on('interrupt', es2);
+  endstop1.on('alert', es1);
+  endstop2.on('alert', es2);
 
   process.stdin.on('keypress', function (chunk, key) {
     //console.log('Get Chunk: ' + chunk + '\n');
