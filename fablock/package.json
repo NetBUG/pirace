@@ -1,0 +1,17 @@
+{
+  "name": "fablock-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mfrc522-rpi": "^2.1.2",
+    "nedb": "^1.8.0",
+    "node-telegram-bot-api": "^0.40.0",
+    "rpi-softspi": "^1.0.5"
+  }
+}
